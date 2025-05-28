@@ -189,22 +189,17 @@
         });
       });
 
-      // 3 ตัวรวมเบิ้ล + ตอง (ไม่กลับ)
+      // 3 ตัวรวมเบิ้ล + ตอง (จากเลขชุดเท่านั้น)
       digits.forEach((a, i) => {
         digits.forEach((b, j) => {
-          digits.forEach((c, k) => {
-            if (i < j && j < k) {
-              const triplet = a + b + c;
-              const set = new Set([a, b, c]);
-              if (set.size < 3) {
-                threeWithDup.add(triplet);
-              }
-            }
-          });
+          if (i !== j) {
+            threeWithDup.add(a + a + b);
+            threeWithDup.add(a + b + b);
+          }
         });
       });
 
-      // เพิ่มเลขตอง
+      // เพิ่มเลขตองจากเลขที่กรอกเท่านั้น
       digits.forEach(d => {
         threeWithDup.add(d + d + d);
       });
@@ -262,4 +257,5 @@
   </script>
 </body>
 </html>
+
 
