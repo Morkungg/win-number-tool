@@ -88,7 +88,6 @@
       margin-left: 0.4rem;
       font-size: 0.9rem;
     }
-    /* Clear floats */
     .clearfix::after {
       content: "";
       clear: both;
@@ -159,35 +158,43 @@
       const threeNoDup = new Set();
       const threeWithDup = new Set();
 
-      // 2 ตัว รวมเบิ้ล
-      for (let i = 0; i < digits.length; i++) {
-        for (let j = 0; j < digits.length; j++) {
+      // 2 ตัว
+      digits.forEach((a, i) => {
+        digits.forEach((b, j) => {
+          const pair = a + b;
           if (i !== j) {
-            const pair = digits[i] + digits[j];
             twoWithDup.add(pair);
-            if (digits[i] !== digits[j]) twoNoDup.add(pair);
-          }
-        }
-      }
-
-      // 3 ตัว รวมเบิ้ล
-      for (let i = 0; i < digits.length; i++) {
-        for (let j = 0; j < digits.length; j++) {
-          for (let k = 0; k < digits.length; k++) {
-            if (i !== j && j !== k && i !== k) {
-              const triplet = digits[i] + digits[j] + digits[k];
-              threeWithDup.add(triplet);
-              // check no duplicates in triplet digits
-              if (
-                digits[i] !== digits[j] &&
-                digits[j] !== digits[k] &&
-                digits[i] !== digits[k]
-              )
-                threeNoDup.add(triplet);
+            if (a !== b) {
+              // แบบไม่กลับ เช่น 12 จะไม่เอา 21 ซ้ำ
+              if (!twoNoDup.has(b + a)) {
+                twoNoDup.add(pair);
+              }
             }
           }
-        }
-      }
+          if (i === j) {
+            twoWithDup.add(pair); // รวมเบิ้ลเช่น 11, 22
+          }
+        });
+      });
+
+      // 3 ตัว
+      digits.forEach((a, i) => {
+        digits.forEach((b, j) => {
+          digits.forEach((c, k) => {
+            const triplet = a + b + c;
+            if (i !== j && j !== k && i !== k) {
+              threeWithDup.add(triplet);
+              if (new Set([a, b, c]).size === 3) {
+                // ไม่มีซ้ำใน 3 ตัว
+                const reverse = [a, b, c].sort().join('');
+                if (![...threeNoDup].some(e => e.split('').sort().join('') === reverse)) {
+                  threeNoDup.add(triplet);
+                }
+              }
+            }
+          });
+        });
+      });
 
       // แสดงผล
       showResult('res2NoDup', twoNoDup);
@@ -216,10 +223,8 @@
 
     function copyText(id) {
       const text = document.getElementById(id).textContent;
-      if (!text) return alert('ไม่มีข้อความให้คัดลอก');
-      navigator.clipboard.writeText(text).then(() => {
-        alert('คัดลอกแล้ว!');
-      });
+      if (!text) return;
+      navigator.clipboard.writeText(text);
     }
   </script>
 </body>
