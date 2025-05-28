@@ -145,18 +145,20 @@
       const threeNoDup = new Set();
       const threeWithDup = new Set();
 
-      // 2 ตัว
+      // 2 ตัวไม่รวมเบิ้ล (ไม่กลับ)
       digits.forEach((a, i) => {
         digits.forEach((b, j) => {
-          if (i === j) {
-            twoWithDup.add(a + b); // เบิ้ล
-          } else {
-            const pair = a + b;
-            const reverse = b + a;
-            if (!twoNoDup.has(reverse)) {
-              twoNoDup.add(pair);
-            }
-            twoWithDup.add(pair);
+          if (i < j) {
+            twoNoDup.add(a + b);
+          }
+        });
+      });
+
+      // 2 ตัวรวมเบิ้ล (ไม่กลับ)
+      digits.forEach((a, i) => {
+        digits.forEach((b, j) => {
+          if (i <= j) {
+            twoWithDup.add(a + b);
           }
         });
       });
@@ -226,3 +228,4 @@
   </script>
 </body>
 </html>
+
