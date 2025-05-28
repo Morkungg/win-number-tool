@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>วินเลข</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Sriracha&display=swap');
     body {
@@ -18,13 +18,14 @@
       background: #fff;
       padding: 1.5rem;
       border-radius: 1rem;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
     }
     h1 {
       text-align: center;
       margin-bottom: 1rem;
     }
-    input, button {
+    input,
+    button {
       font-family: 'Sriracha', cursive;
       width: 100%;
       padding: 0.6rem;
@@ -38,9 +39,16 @@
       color: white;
       border: none;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
     button:hover {
       background: #157347;
+    }
+    .result-section {
+      margin-top: 1rem;
+    }
+    .result-section b {
+      font-size: 1.1rem;
     }
     .result {
       background: #f8f9fa;
@@ -49,11 +57,42 @@
       white-space: pre-wrap;
       word-wrap: break-word;
       font-size: 1rem;
+      margin-bottom: 0.5rem;
+      min-height: 2.5em;
     }
     .error {
       color: red;
       text-align: center;
       margin-bottom: 1rem;
+    }
+    .copy-btn {
+      font-family: 'Sriracha', cursive;
+      background: #0d6efd;
+      border: none;
+      color: white;
+      padding: 0.3rem 0.7rem;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      float: right;
+      margin-top: -2.3rem;
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .copy-btn:hover {
+      background: #0b5ed7;
+    }
+    .count {
+      font-weight: normal;
+      color: #555;
+      margin-left: 0.4rem;
+      font-size: 0.9rem;
+    }
+    /* Clear floats */
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
     }
   </style>
 </head>
@@ -61,17 +100,35 @@
   <div class="container">
     <h1>วินเลข</h1>
     <div class="error" id="error"></div>
-    <input type="text" id="input" placeholder="ใส่เลขไม่ซ้ำกัน เช่น 1234">
+    <input type="text" id="input" placeholder="ใส่เลขไม่ซ้ำกัน เช่น 1234" />
     <button onclick="generate()">วินเลข</button>
 
-    <div style="margin-top:1rem;">
-      <b>2 ตัว (ไม่รวมเบิ้ล):</b> <span id="count2"></span>
-      <div class="result" id="res2"></div>
+    <div class="result-section clearfix">
+      <b>2 ตัว (ไม่รวมเบิ้ล)</b>
+      <span class="count" id="count2NoDup"></span>
+      <button class="copy-btn" onclick="copyText('res2NoDup')">คัดลอก</button>
+      <div class="result" id="res2NoDup"></div>
     </div>
 
-    <div style="margin-top:1rem;">
-      <b>3 ตัว (ไม่รวมเบิ้ล):</b> <span id="count3"></span>
-      <div class="result" id="res3"></div>
+    <div class="result-section clearfix">
+      <b>2 ตัว (รวมเบิ้ล)</b>
+      <span class="count" id="count2WithDup"></span>
+      <button class="copy-btn" onclick="copyText('res2WithDup')">คัดลอก</button>
+      <div class="result" id="res2WithDup"></div>
+    </div>
+
+    <div class="result-section clearfix">
+      <b>3 ตัว (ไม่รวมเบิ้ล)</b>
+      <span class="count" id="count3NoDup"></span>
+      <button class="copy-btn" onclick="copyText('res3NoDup')">คัดลอก</button>
+      <div class="result" id="res3NoDup"></div>
+    </div>
+
+    <div class="result-section clearfix">
+      <b>3 ตัว (รวมเบิ้ล)</b>
+      <span class="count" id="count3WithDup"></span>
+      <button class="copy-btn" onclick="copyText('res3WithDup')">คัดลอก</button>
+      <div class="result" id="res3WithDup"></div>
     </div>
   </div>
 
@@ -82,44 +139,87 @@
     }
 
     function generate() {
-      const input = document.getElementById("input").value.replace(/\D/g, '');
-      const errorDiv = document.getElementById("error");
+      const input = document.getElementById('input').value.replace(/\D/g, '');
+      const errorDiv = document.getElementById('error');
       if (!input || input.length < 2) {
-        errorDiv.textContent = "❌ กรุณาใส่เลขอย่างน้อย 2 ตัว";
+        errorDiv.textContent = '❌ กรุณาใส่เลขอย่างน้อย 2 ตัว';
+        clearResults();
         return;
       }
       if (hasDuplicate(input)) {
-        errorDiv.textContent = "❌ ห้ามมีเลขซ้ำ กรุณาใส่เลขไม่ซ้ำกันเท่านั้น";
+        errorDiv.textContent = '❌ ห้ามมีเลขซ้ำ กรุณาใส่เลขไม่ซ้ำกันเท่านั้น';
+        clearResults();
         return;
       }
-      errorDiv.textContent = "";
+      errorDiv.textContent = '';
 
       const digits = input.split('');
-      const twoSet = new Set();
-      const threeSet = new Set();
+      const twoNoDup = new Set();
+      const twoWithDup = new Set();
+      const threeNoDup = new Set();
+      const threeWithDup = new Set();
 
+      // 2 ตัว รวมเบิ้ล
       for (let i = 0; i < digits.length; i++) {
         for (let j = 0; j < digits.length; j++) {
           if (i !== j) {
-            twoSet.add(digits[i] + digits[j]);
+            const pair = digits[i] + digits[j];
+            twoWithDup.add(pair);
+            if (digits[i] !== digits[j]) twoNoDup.add(pair);
           }
         }
       }
 
+      // 3 ตัว รวมเบิ้ล
       for (let i = 0; i < digits.length; i++) {
         for (let j = 0; j < digits.length; j++) {
           for (let k = 0; k < digits.length; k++) {
             if (i !== j && j !== k && i !== k) {
-              threeSet.add(digits[i] + digits[j] + digits[k]);
+              const triplet = digits[i] + digits[j] + digits[k];
+              threeWithDup.add(triplet);
+              // check no duplicates in triplet digits
+              if (
+                digits[i] !== digits[j] &&
+                digits[j] !== digits[k] &&
+                digits[i] !== digits[k]
+              )
+                threeNoDup.add(triplet);
             }
           }
         }
       }
 
-      document.getElementById("res2").textContent = Array.from(twoSet).join(' ');
-      document.getElementById("count2").textContent = `(${twoSet.size} ชุด)`;
-      document.getElementById("res3").textContent = Array.from(threeSet).join(' ');
-      document.getElementById("count3").textContent = `(${threeSet.size} ชุด)`;
+      // แสดงผล
+      showResult('res2NoDup', twoNoDup);
+      showResult('res2WithDup', twoWithDup);
+      showResult('res3NoDup', threeNoDup);
+      showResult('res3WithDup', threeWithDup);
+
+      // แสดงจำนวน
+      document.getElementById('count2NoDup').textContent = `(${twoNoDup.size} ชุด)`;
+      document.getElementById('count2WithDup').textContent = `(${twoWithDup.size} ชุด)`;
+      document.getElementById('count3NoDup').textContent = `(${threeNoDup.size} ชุด)`;
+      document.getElementById('count3WithDup').textContent = `(${threeWithDup.size} ชุด)`;
+    }
+
+    function showResult(id, set) {
+      document.getElementById(id).textContent = Array.from(set).join(' ');
+    }
+
+    function clearResults() {
+      ['res2NoDup', 'res2WithDup', 'res3NoDup', 'res3WithDup', 'count2NoDup', 'count2WithDup', 'count3NoDup', 'count3WithDup'].forEach(
+        id => {
+          document.getElementById(id).textContent = '';
+        }
+      );
+    }
+
+    function copyText(id) {
+      const text = document.getElementById(id).textContent;
+      if (!text) return alert('ไม่มีข้อความให้คัดลอก');
+      navigator.clipboard.writeText(text).then(() => {
+        alert('คัดลอกแล้ว!');
+      });
     }
   </script>
 </body>
