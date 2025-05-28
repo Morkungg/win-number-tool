@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>โปรแกรมวินเลข</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { padding: 2rem; background: #f9f9f9; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background: #fff; padding: 1rem; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="mb-4">🔢 โปรแกรมวินเลข</h2>
+
+    <div class="mb-3">
+      <label class="form-label">เลขตั้งต้น</label>
+      <input type="text" id="input" class="form-control" placeholder="เช่น 1234">
+    </div>
+
+    <div class="mb-3">
+      <button class="btn btn-primary" onclick="generate()">วินเลข</button>
+      <button class="btn btn-secondary" onclick="reset()">Reset</button>
+    </div>
+
+    <div class="mb-3">
+      <h5>2 ตัว ไม่รวมเบิ้ล (<span id="c2n"></span>)</h5>
+      <pre id="twoNoDup"></pre>
+      <button class="btn btn-sm btn-outline-dark" onclick="copy('twoNoDup')">คัดลอก</button>
+    </div>
+
+    <div class="mb-3">
+      <h5>2 ตัว รวมเบิ้ล (<span id="c2y"></span>)</h5>
+      <pre id="twoWithDup"></pre>
+      <button class="btn btn-sm btn-outline-dark" onclick="copy('twoWithDup')">คัดลอก</button>
+    </div>
+
+    <div class="mb-3">
+      <h5>3 ตัว ไม่รวมเบิ้ล (<span id="c3n"></span>)</h5>
+      <pre id="threeNoDup"></pre>
+      <button class="btn btn-sm btn-outline-dark" onclick="copy('threeNoDup')">คัดลอก</button>
+    </div>
+
+    <div class="mb-3">
+      <h5>3 ตัว รวมเบิ้ล (<span id="c3y"></span>)</h5>
+      <pre id="threeWithDup"></pre>
+      <button class="btn btn-sm btn-outline-dark" onclick="copy('threeWithDup')">คัดลอก</button>
+    </div>
+  </div>
+
+  <script>
+    function generate() {
+      const input = document.getElementById('input').value.replace(/\D/g, '');
+      if (input.length < 2) return alert('กรุณากรอกเลขอย่างน้อย 2 ตัว');
+      const digits = input.split('');
+      const twoNoDup = new Set();
+      const twoWithDup = new Set();
+      const threeNoDup = new Set();
+      const threeWithDup = new Set();
+
+      for (let i = 0; i < digits.length; i++) {
+        for (let j = 0; j < digits.length; j++) {
+          const pair = digits[i] + digits[j];
+          if (i !== j) {
+            if (digits[i] !== digits[j]) twoNoDup.add(pair);
+            twoWithDup.add(pair);
+          }
+        }
+      }
+
+      for (let i = 0; i < digits.length; i++) {
+        for (let j = 0; j < digits.length; j++) {
+          for (let k = 0; k < digits.length; k++) {
+            const triplet = digits[i] + digits[j] + digits[k];
+            if (i !== j && j !== k && i !== k) {
+              if (digits[i] !== digits[j] && digits[j] !== digits[k] && digits[i] !== digits[k])
+                threeNoDup.add(triplet);
+              threeWithDup.add(triplet);
+            }
+          }
+        }
+      }
+
+      document.getElementById('twoNoDup').textContent = Array.from(twoNoDup).join(' ');
+      document.getElementById('twoWithDup').textContent = Array.from(twoWithDup).join(' ');
+      document.getElementById('threeNoDup').textContent = Array.from(threeNoDup).join(' ');
+      document.getElementById('threeWithDup').textContent = Array.from(threeWithDup).join(' ');
+      document.getElementById('c2n').textContent = twoNoDup.size;
+      document.getElementById('c2y').textContent = twoWithDup.size;
+      document.getElementById('c3n').textContent = threeNoDup.size;
+      document.getElementById('c3y').textContent = threeWithDup.size;
+    }
+
+    function reset() {
+      document.getElementById('input').value = '';
+      ['twoNoDup', 'twoWithDup', 'threeNoDup', 'threeWithDup', 'c2n', 'c2y', 'c3n', 'c3y'].forEach(id => {
+        document.getElementById(id).textContent = '';
+      });
+    }
+
+    function copy(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('คัดลอกแล้ว!');
+      });
+    }
+  </script>
+</body>
+</html>
