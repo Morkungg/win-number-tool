@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>วินเลข</title>
   <style>
     body {
@@ -22,11 +22,24 @@
       text-align: center;
       margin-bottom: 1.5rem;
     }
+    .input-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
     input {
       font-size: 1.5rem;
-      width: 100%;
       padding: 0.8rem;
-      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+    .reset-btn {
+      font-size: 1rem;
+      padding: 0.8rem 1rem;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
     .result-section {
       margin-bottom: 2rem;
@@ -71,7 +84,6 @@
       color: red;
       margin-bottom: 1rem;
     }
-
     @media (max-width: 991px) {
       body {
         display: none;
@@ -83,7 +95,10 @@
   <div class="container">
     <h1>วินเลข</h1>
     <div class="error" id="error"></div>
-    <input type="text" id="input" placeholder="ใส่เลขไม่ซ้ำกัน เช่น 1234" oninput="generate()" maxlength="10" />
+    <div class="input-row">
+      <input type="text" id="input" placeholder="ใส่เลขไม่ซ้ำกัน เช่น 1234" oninput="generate()" maxlength="10" />
+      <button onclick="resetAll()" class="reset-btn">รีเซ็ต</button>
+    </div>
 
     <div class="result-section">
       <div class="result-header">
@@ -111,7 +126,7 @@
 
     <div class="result-section">
       <div class="result-header">
-        <b>3 ตัว (รวมเบิ้ล) <span id="count3WithDup"></span></b>
+        <b>3 ตัว (รวมเบิ้ล + ตอง) <span id="count3WithDup"></span></b>
         <button class="copy-btn" onclick="copyResult('res3WithDup', this)">คัดลอก</button>
       </div>
       <div class="result" id="res3WithDup"></div>
@@ -163,22 +178,35 @@
         });
       });
 
-      // 3 ตัว
+      // 3 ตัวไม่รวมเบิ้ล (ไม่กลับ)
       digits.forEach((a, i) => {
         digits.forEach((b, j) => {
           digits.forEach((c, k) => {
-            const triplet = a + b + c;
-            if (i !== j && j !== k && i !== k) {
-              threeWithDup.add(triplet);
-              if (new Set([a, b, c]).size === 3) {
-                const sorted = [a, b, c].sort().join('');
-                if (![...threeNoDup].some(e => e.split('').sort().join('') === sorted)) {
-                  threeNoDup.add(triplet);
-                }
+            if (i < j && j < k && new Set([a, b, c]).size === 3) {
+              threeNoDup.add(a + b + c);
+            }
+          });
+        });
+      });
+
+      // 3 ตัวรวมเบิ้ล + ตอง (ไม่กลับ)
+      digits.forEach((a, i) => {
+        digits.forEach((b, j) => {
+          digits.forEach((c, k) => {
+            if (i < j && j < k) {
+              const triplet = a + b + c;
+              const set = new Set([a, b, c]);
+              if (set.size < 3) {
+                threeWithDup.add(triplet);
               }
             }
           });
         });
+      });
+
+      // เพิ่มเลขตอง
+      digits.forEach(d => {
+        threeWithDup.add(d + d + d);
       });
 
       show('res2NoDup', twoNoDup);
@@ -209,6 +237,12 @@
       ['count2NoDup', 'count2WithDup', 'count3NoDup', 'count3WithDup'].forEach(id => {
         document.getElementById(id).textContent = '';
       });
+    }
+
+    function resetAll() {
+      document.getElementById('input').value = '';
+      document.getElementById('error').textContent = '';
+      clearAll();
     }
 
     function copyResult(id, btn) {
