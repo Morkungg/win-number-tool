@@ -1,149 +1,189 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>วินเลข</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: #000;
-      color: #fff;
+      background: black;
+      color: white;
       font-family: sans-serif;
-      margin: 0;
-      padding: 40px;
-      max-width: 900px;
-      margin: auto;
+      padding: 20px;
+      text-align: center;
     }
     input[type="text"] {
       font-size: 20px;
-      padding: 10px;
-      width: 200px;
+      padding: 5px;
+      width: 100px;
       text-align: center;
     }
     button {
       font-size: 16px;
-      padding: 8px 12px;
-      margin-left: 10px;
+      margin-left: 5px;
       cursor: pointer;
     }
-    .result-box {
-      background: #fff;
-      color: #000;
+    .group {
+      margin: 20px 0;
+    }
+    .output {
+      background: white;
+      color: black;
       padding: 10px;
-      margin: 10px 0;
-      white-space: pre-wrap;
-      word-wrap: break-word;
+      margin-top: 5px;
     }
-    .section {
-      margin-top: 30px;
+    .green { color: #00FF00; font-weight: bold; }
+    .red { color: #FF5555; font-weight: bold; }
+    .copy-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 10px;
     }
-    .title {
-      font-weight: bold;
-      font-size: 18px;
+    .reset-btn {
+      background: #e74c3c;
+      color: white;
+      padding: 4px 10px;
+      border: none;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>วินเลข</h2>
-  <div>
-    <input type="text" id="input" placeholder="เช่น 1234" maxlength="10" oninput="generate()">
-    <button onclick="resetInput()">รีเซ็ต</button>
+  <h2>โปรแกรมวินเลข จากหน้าไปหลัง</h2>
+  <input id="inputDigits" maxlength="10" />
+  <button onclick="resetInput()" class="reset-btn">Reset</button>
+
+  <div id="original" class="group"></div>
+
+  <div class="group">
+    <span>เลข <b class="green">2 ตัว ไม่รวมเบิ้ล</b></span>
+    <button onclick="copyText('twoNoDouble')" class="copy-btn">คัดลอก</button>
+    <div id="twoNoDouble" class="output"></div>
   </div>
 
-  <div class="section">
-    <div class="title">เลข 2 ตัว ไม่รวมเบิ้ล <button onclick="copyResult('win2')">คัดลอก</button></div>
-    <div id="win2" class="result-box"></div>
+  <div class="group">
+    <span>เลข <b class="red">2 ตัว รวมเบิ้ล</b></span>
+    <button onclick="copyText('twoWithDouble')" class="copy-btn">คัดลอก</button>
+    <div id="twoWithDouble" class="output"></div>
   </div>
 
-  <div class="section">
-    <div class="title">เลข 2 ตัว รวมเบิ้ล <button onclick="copyResult('win2Double')">คัดลอก</button></div>
-    <div id="win2Double" class="result-box"></div>
+  <div class="group">
+    <span>เลข <b class="green">3 ตัว ไม่รวมเบิ้ล</b></span>
+    <button onclick="copyText('threeNoDouble')" class="copy-btn">คัดลอก</button>
+    <div id="threeNoDouble" class="output"></div>
   </div>
 
-  <div class="section">
-    <div class="title">เลข 3 ตัว ไม่รวมเบิ้ล <button onclick="copyResult('win3')">คัดลอก</button></div>
-    <div id="win3" class="result-box"></div>
-  </div>
-
-  <div class="section">
-    <div class="title">เลข 3 ตัว รวมเบิ้ล + ตอง <button onclick="copyResult('win3Double')">คัดลอก</button></div>
-    <div id="win3Double" class="result-box"></div>
+  <div class="group">
+    <span>เลข <b class="red">3 ตัว รวมเบิ้ล</b></span>
+    <button onclick="copyText('threeWithDouble')" class="copy-btn">คัดลอก</button>
+    <div id="threeWithDouble" class="output"></div>
   </div>
 
   <script>
+    const input = document.getElementById("inputDigits");
+    const original = document.getElementById("original");
+
+    input.addEventListener("input", generate);
+
     function resetInput() {
-      document.getElementById("input").value = "";
+      input.value = "";
       generate();
     }
 
-    function copyResult(id) {
+    function copyText(id) {
       const text = document.getElementById(id).innerText;
       navigator.clipboard.writeText(text);
-      const btn = document.querySelector(`#${id}`).previousElementSibling.querySelector("button");
-      const original = btn.innerText;
-      btn.innerText = "คัดลอกแล้ว";
-      setTimeout(() => { btn.innerText = original; }, 1500);
+    }
+
+    function unique(arr) {
+      return [...new Set(arr)];
+    }
+
+    function combinations(arr, k) {
+      const result = [];
+      const recurse = (start, comb) => {
+        if (comb.length === k) {
+          result.push(comb);
+          return;
+        }
+        for (let i = start; i < arr.length; i++) {
+          recurse(i + 1, comb + arr[i]);
+        }
+      };
+      recurse(0, "");
+      return result;
+    }
+
+    function combinationsWithReplacement(arr, k) {
+      const result = [];
+      const recurse = (start, comb) => {
+        if (comb.length === k) {
+          result.push(comb);
+          return;
+        }
+        for (let i = start; i < arr.length; i++) {
+          recurse(i, comb + arr[i]);
+        }
+      };
+      recurse(0, "");
+      return result;
+    }
+
+    function permutations(arr, k) {
+      const result = [];
+      const used = [];
+      const recurse = (path) => {
+        if (path.length === k) {
+          result.push(path);
+          return;
+        }
+        for (let i = 0; i < arr.length; i++) {
+          if (!used[i]) {
+            used[i] = true;
+            recurse(path + arr[i]);
+            used[i] = false;
+          }
+        }
+      };
+      recurse("");
+      return result;
     }
 
     function generate() {
-      const input = document.getElementById("input").value.replace(/[^0-9]/g, "");
-      const digits = [...new Set(input.split(""))];
+      const raw = input.value.replace(/\D/g, "");
+      const digits = unique(raw.split("")).sort();
+      original.innerHTML = raw ? `<h3>เลขตั้งต้น</h3><div>${raw}</div>` : "";
 
-      if (digits.length < 2) {
-        ["win2", "win2Double", "win3", "win3Double"].forEach(id => {
-          document.getElementById(id).innerText = "";
-        });
-        return;
-      }
+      // 2 ตัว
+      const twoNoDouble = combinations(digits, 2);
+      const twoWithDouble = combinationsWithReplacement(digits, 2);
 
-      let win2 = new Set();
-      let win2Double = new Set();
-      let win3 = new Set();
-      let win3Double = new Set();
-
-      // 2 ตัวไม่รวมเบิ้ล (ไม่กลับ)
-      for (let i = 0; i < digits.length; i++) {
-        for (let j = i + 1; j < digits.length; j++) {
-          win2.add(digits[i] + digits[j]);
-        }
-      }
-
-      // 2 ตัวรวมเบิ้ล
-      digits.forEach(a => {
-        digits.forEach(b => {
-          win2Double.add(a + b);
-        });
+      // 3 ตัว ไม่รวมเบิ้ล
+      const threeNoDouble = permutations(digits, 3).filter(n => {
+        return (new Set(n.split(""))).size === 3;
       });
 
-      // 3 ตัวไม่รวมเบิ้ล (ไม่กลับ)
-      for (let i = 0; i < digits.length; i++) {
-        for (let j = i + 1; j < digits.length; j++) {
-          for (let k = j + 1; k < digits.length; k++) {
-            win3.add(digits[i] + digits[j] + digits[k]);
+      // 3 ตัว รวมเบิ้ล + ตอง
+      let threeWithDoubleSet = new Set();
+      const tripletComb = combinationsWithReplacement(digits, 3);
+      for (let c of tripletComb) {
+        const chars = c.split("");
+        const perms = permutations(chars, 3);
+        for (let p of perms) {
+          if (p[0] <= p[1] && p[1] <= p[2]) {
+            threeWithDoubleSet.add(p);
           }
         }
       }
-
-      // 3 ตัวรวมเบิ้ล
-      digits.forEach(a => {
-        digits.forEach(b => {
-          if (a !== b) {
-            win3Double.add(a + a + b);
-            win3Double.add(a + b + a);
-            win3Double.add(b + a + a);
-          }
-        });
-      });
-
       // เพิ่มเลขตอง
-      digits.forEach(n => {
-        win3Double.add(n + n + n);
-      });
+      digits.forEach(d => threeWithDoubleSet.add(d + d + d));
 
-      document.getElementById("win2").innerText = [...win2].join(", ");
-      document.getElementById("win2Double").innerText = [...win2Double].join(", ");
-      document.getElementById("win3").innerText = [...win3].join(", ");
-      document.getElementById("win3Double").innerText = [...win3Double].join(", ");
+      // แสดงผล
+      document.getElementById("twoNoDouble").innerText = twoNoDouble.join(", ");
+      document.getElementById("twoWithDouble").innerText = twoWithDouble.join(", ");
+      document.getElementById("threeNoDouble").innerText = unique(threeNoDouble).join(", ");
+      document.getElementById("threeWithDouble").innerText = Array.from(threeWithDoubleSet).sort().join(", ");
     }
   </script>
 </body>
