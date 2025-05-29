@@ -3,129 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <title>วินเลข</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: black;
-      color: white;
+      background: #000;
+      color: #fff;
       font-family: sans-serif;
+      margin: 0;
+      padding: 40px;
       max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
+      margin: auto;
     }
     input[type="text"] {
-      padding: 10px;
       font-size: 20px;
+      padding: 10px;
       width: 200px;
       text-align: center;
     }
     button {
-      padding: 10px;
       font-size: 16px;
+      padding: 8px 12px;
+      margin-left: 10px;
       cursor: pointer;
-      border: none;
-      border-radius: 5px;
     }
-    .reset-btn {
-      background: red;
-      color: white;
-      margin-left: 10px;
-    }
-    .copy-btn {
-      background: #007bff;
-      color: white;
-      margin-left: 10px;
+    .result-box {
+      background: #fff;
+      color: #000;
+      padding: 10px;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
     .section {
-      margin: 20px 0;
+      margin-top: 30px;
     }
     .title {
       font-weight: bold;
       font-size: 18px;
-      margin: 10px 0;
-    }
-    .green { color: lightgreen; }
-    .red { color: pink; }
-    .result-box {
-      background: white;
-      color: black;
-      padding: 10px;
-      font-size: 16px;
-      line-height: 1.6em;
-      word-wrap: break-word;
-      max-height: 200px;
-      overflow-y: auto;
     }
   </style>
 </head>
 <body>
+  <h2>วินเลข</h2>
   <div>
-    <input type="text" id="inputNumbers" maxlength="10" placeholder="ใส่เลข เช่น 1234" oninput="generate()">
-    <button class="reset-btn" onclick="resetInput()">Reset</button>
+    <input type="text" id="input" placeholder="เช่น 1234" maxlength="10" oninput="generate()">
+    <button onclick="resetInput()">รีเซ็ต</button>
   </div>
 
   <div class="section">
-    <div class="title">เลขตั้งต้น</div>
-    <div id="baseNumbers"></div>
+    <div class="title">เลข 2 ตัว ไม่รวมเบิ้ล <button onclick="copyResult('win2')">คัดลอก</button></div>
+    <div id="win2" class="result-box"></div>
   </div>
 
   <div class="section">
-    <div class="title"><span class="green">เลข 3 ตัว รวมเบิ้ล</span> <button class="copy-btn" onclick="copyResult('resultDouble3')">คัดลอก</button></div>
-    <div id="resultDouble3" class="result-box"></div>
+    <div class="title">เลข 2 ตัว รวมเบิ้ล <button onclick="copyResult('win2Double')">คัดลอก</button></div>
+    <div id="win2Double" class="result-box"></div>
   </div>
 
-<script>
-function generate3DigitDoubleAndTriple(digits) {
-  const nums = [...new Set(digits)].sort();
-  let results = new Set();
+  <div class="section">
+    <div class="title">เลข 3 ตัว ไม่รวมเบิ้ล <button onclick="copyResult('win3')">คัดลอก</button></div>
+    <div id="win3" class="result-box"></div>
+  </div>
 
-  // เลขไม่ซ้ำเรียง 3 ตัว (ไม่กลับ)
-  for (let i = 0; i < nums.length; i++) {
-    for (let j = i+1; j < nums.length; j++) {
-      for (let k = j+1; k < nums.length; k++) {
-        results.add(nums[i] + nums[j] + nums[k]);
-      }
+  <div class="section">
+    <div class="title">เลข 3 ตัว รวมเบิ้ล + ตอง <button onclick="copyResult('win3Double')">คัดลอก</button></div>
+    <div id="win3Double" class="result-box"></div>
+  </div>
+
+  <script>
+    function resetInput() {
+      document.getElementById("input").value = "";
+      generate();
     }
-  }
 
-  // เลขเบิ้ล เช่น 112, 113
-  nums.forEach(a => {
-    nums.forEach(b => {
-      if (a !== b) {
-        results.add(a + a + b);
+    function copyResult(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text);
+      const btn = document.querySelector(`#${id}`).previousElementSibling.querySelector("button");
+      const original = btn.innerText;
+      btn.innerText = "คัดลอกแล้ว";
+      setTimeout(() => { btn.innerText = original; }, 1500);
+    }
+
+    function generate() {
+      const input = document.getElementById("input").value.replace(/[^0-9]/g, "");
+      const digits = [...new Set(input.split(""))];
+
+      if (digits.length < 2) {
+        ["win2", "win2Double", "win3", "win3Double"].forEach(id => {
+          document.getElementById(id).innerText = "";
+        });
+        return;
       }
-    });
-  });
 
-  // เลขตอง เช่น 111, 222
-  nums.forEach(n => {
-    results.add(n + n + n);
-  });
+      let win2 = new Set();
+      let win2Double = new Set();
+      let win3 = new Set();
+      let win3Double = new Set();
 
-  return [...results].sort();
-}
+      // 2 ตัวไม่รวมเบิ้ล (ไม่กลับ)
+      for (let i = 0; i < digits.length; i++) {
+        for (let j = i + 1; j < digits.length; j++) {
+          win2.add(digits[i] + digits[j]);
+        }
+      }
 
-function generate() {
-  const input = document.getElementById("inputNumbers").value.replace(/[^0-9]/g, "");
-  document.getElementById("baseNumbers").innerText = input;
-  if (input.length < 2) return;
+      // 2 ตัวรวมเบิ้ล
+      digits.forEach(a => {
+        digits.forEach(b => {
+          win2Double.add(a + b);
+        });
+      });
 
-  const win3Double = generate3DigitDoubleAndTriple(input);
-  document.getElementById("resultDouble3").innerText = win3Double.join(", ");
-}
+      // 3 ตัวไม่รวมเบิ้ล (ไม่กลับ)
+      for (let i = 0; i < digits.length; i++) {
+        for (let j = i + 1; j < digits.length; j++) {
+          for (let k = j + 1; k < digits.length; k++) {
+            win3.add(digits[i] + digits[j] + digits[k]);
+          }
+        }
+      }
 
-function resetInput() {
-  document.getElementById("inputNumbers").value = "";
-  generate();
-}
+      // 3 ตัวรวมเบิ้ล
+      digits.forEach(a => {
+        digits.forEach(b => {
+          if (a !== b) {
+            win3Double.add(a + a + b);
+            win3Double.add(a + b + a);
+            win3Double.add(b + a + a);
+          }
+        });
+      });
 
-function copyResult(id) {
-  const el = document.getElementById(id);
-  navigator.clipboard.writeText(el.innerText);
-  const btn = el.previousElementSibling;
-  const original = btn.innerText;
-  btn.innerText = "คัดลอกแล้ว";
-  setTimeout(() => { btn.innerText = original; }, 1500);
-}
-</script>
+      // เพิ่มเลขตอง
+      digits.forEach(n => {
+        win3Double.add(n + n + n);
+      });
+
+      document.getElementById("win2").innerText = [...win2].join(", ");
+      document.getElementById("win2Double").innerText = [...win2Double].join(", ");
+      document.getElementById("win3").innerText = [...win3].join(", ");
+      document.getElementById("win3Double").innerText = [...win3Double].join(", ");
+    }
+  </script>
 </body>
 </html>
