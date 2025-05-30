@@ -9,36 +9,34 @@
       background: #000;
       color: white;
       font-family: 'Sarabun', sans-serif;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-    h2 {
       text-align: center;
-      margin-bottom: 20px;
+      padding: 20px;
     }
     input[type="text"] {
       font-size: 24px;
       padding: 10px;
       width: 250px;
       text-align: center;
+      border-radius: 8px;
     }
-    .warning {
+    .error {
       color: red;
-      font-size: 16px;
-      margin-top: 5px;
+      margin-top: 10px;
+      font-weight: bold;
     }
     .group {
-      margin: 25px 0;
+      margin: 30px 0;
     }
     .result {
       background: white;
       color: black;
+      margin: 10px auto;
       padding: 15px;
+      max-width: 90%;
       font-size: 18px;
       line-height: 1.6;
       border-radius: 8px;
-      word-break: break-word;
+      word-wrap: break-word;
     }
     .btn-copy {
       background: dodgerblue;
@@ -46,135 +44,144 @@
       border: none;
       padding: 6px 12px;
       border-radius: 6px;
-      font-size: 14px;
       cursor: pointer;
+      font-size: 14px;
       margin-top: 5px;
     }
-    .btn-copy:active {
-      transform: scale(0.98);
+    .btn-reset {
+      background: red;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 14px;
     }
-    .label {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-    .highlight {
-      color: red;
+    h3 {
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
+
   <h2>วินเลข</h2>
-  <div style="text-align: center;">
-    <input type="text" id="inputNumbers" maxlength="10" placeholder="เช่น 1234" />
-    <div class="warning" id="warningMsg"></div>
-  </div>
+  <input type="text" id="inputNumbers" maxlength="10" placeholder="ใส่เลขไม่ซ้ำ เช่น 1234" />
+  <button class="btn-reset" onclick="resetAll()">รีเซ็ต</button>
+  <div id="errorMsg" class="error"></div>
 
   <div class="group">
-    <div class="label">เลข <b>2</b> ตัว <span>ไม่รวมเบิ้ล</span></div>
+    <h3>เลข 2 ตัว <span style="color:green;">ไม่รวมเบิ้ล</span></h3>
     <div class="result" id="res2NoDup"></div>
-    <button class="btn-copy" onclick="copyToClipboard('res2NoDup', this)">คัดลอก</button>
+    <button class="btn-copy" onclick="copyText('res2NoDup', this)">คัดลอก</button>
   </div>
 
   <div class="group">
-    <div class="label">เลข <b>2</b> ตัว <span class="highlight">รวมเบิ้ล</span></div>
-    <div class="result" id="res2WithDup"></div>
-    <button class="btn-copy" onclick="copyToClipboard('res2WithDup', this)">คัดลอก</button>
+    <h3>เลข 2 ตัว <span style="color:red;">รวมเบิ้ล</span></h3>
+    <div class="result" id="res2Dup"></div>
+    <button class="btn-copy" onclick="copyText('res2Dup', this)">คัดลอก</button>
   </div>
 
   <div class="group">
-    <div class="label">เลข <b>3</b> ตัว <span>ไม่รวมเบิ้ล</span></div>
+    <h3>เลข 3 ตัว <span style="color:green;">ไม่รวมเบิ้ล</span></h3>
     <div class="result" id="res3NoDup"></div>
-    <button class="btn-copy" onclick="copyToClipboard('res3NoDup', this)">คัดลอก</button>
+    <button class="btn-copy" onclick="copyText('res3NoDup', this)">คัดลอก</button>
   </div>
 
   <div class="group">
-    <div class="label">เลข <b>3</b> ตัว <span class="highlight">รวมเบิ้ล</span></div>
-    <div class="result" id="res3WithDup"></div>
-    <button class="btn-copy" onclick="copyToClipboard('res3WithDup', this)">คัดลอก</button>
+    <h3>เลข 3 ตัว <span style="color:red;">รวมเบิ้ล</span></h3>
+    <div class="result" id="res3Dup"></div>
+    <button class="btn-copy" onclick="copyText('res3Dup', this)">คัดลอก</button>
   </div>
 
   <script>
     const input = document.getElementById("inputNumbers");
-    const warning = document.getElementById("warningMsg");
+    const errorMsg = document.getElementById("errorMsg");
 
     input.addEventListener("input", () => {
-      const raw = input.value.replace(/\D/g, "");
-      const digits = raw.split("");
+      const digits = input.value.replace(/\D/g, "").split("");
       const uniqueDigits = [...new Set(digits)];
 
       if (digits.length !== uniqueDigits.length) {
-        warning.innerText = "วินเลขซ้ำไม่ได้";
+        errorMsg.innerText = "มีเลขซ้ำอยู่ วินเลขไม่ได้";
         clearResults();
         return;
-      } else {
-        warning.innerText = "";
       }
 
+      errorMsg.innerText = "";
+
       document.getElementById("res2NoDup").innerText = getPairs(uniqueDigits, false).join(", ");
-      document.getElementById("res2WithDup").innerText = getPairs(uniqueDigits, true).join(", ");
+      document.getElementById("res2Dup").innerText = getDoublePairs(uniqueDigits).join(", ");
       document.getElementById("res3NoDup").innerText = getTriplets(uniqueDigits, false).join(", ");
-      document.getElementById("res3WithDup").innerText = getTriplets(digits, true).join(", ");
+      document.getElementById("res3Dup").innerText = getTriplets(uniqueDigits, true).join(", ");
     });
 
-    function clearResults() {
-      document.getElementById("res2NoDup").innerText = "";
-      document.getElementById("res2WithDup").innerText = "";
-      document.getElementById("res3NoDup").innerText = "";
-      document.getElementById("res3WithDup").innerText = "";
-    }
-
-    function getPairs(digits, includeDoubles) {
+    function getPairs(digits, allowDoubles) {
       const result = [];
-
       for (let i = 0; i < digits.length; i++) {
         for (let j = i + 1; j < digits.length; j++) {
           result.push(digits[i] + digits[j]);
         }
       }
+      return result;
+    }
 
-      if (includeDoubles) {
-        digits.forEach(d => {
-          result.push(d + d);
-        });
+    function getDoublePairs(digits) {
+      const result = [];
+      for (const d of digits) {
+        result.push(d + d);
       }
-
-      return [...new Set(result)];
+      return result;
     }
 
     function getTriplets(digits, includeDoubles) {
-      const result = [];
+      const result = new Set();
 
       if (!includeDoubles) {
-        // 3 ตัวไม่ซ้ำ
         for (let i = 0; i < digits.length - 2; i++) {
           for (let j = i + 1; j < digits.length - 1; j++) {
             for (let k = j + 1; k < digits.length; k++) {
-              result.push(digits[i] + digits[j] + digits[k]);
+              result.add(digits[i] + digits[j] + digits[k]);
             }
           }
         }
       } else {
-        // แบบ lekwin.pro = รวมหมด ทั้งเบิ้ล/ไม่เบิ้ล
+        const uniqueSet = new Set();
         for (let i = 0; i < digits.length; i++) {
           for (let j = 0; j < digits.length; j++) {
             for (let k = 0; k < digits.length; k++) {
-              result.push(digits[i] + digits[j] + digits[k]);
+              const triplet = digits[i] + digits[j] + digits[k];
+              const sortedKey = [...triplet].sort().join("");
+              if (!uniqueSet.has(sortedKey)) {
+                uniqueSet.add(sortedKey);
+                result.add(triplet);
+              }
             }
           }
         }
       }
 
-      return [...new Set(result)];
+      return Array.from(result);
     }
 
-    function copyToClipboard(id, btn) {
+    function copyText(id, btn) {
       const text = document.getElementById(id).innerText;
       navigator.clipboard.writeText(text).then(() => {
         const original = btn.innerText;
-        btn.innerText = "คัดลอกแล้ว ✅";
-        setTimeout(() => {
-          btn.innerText = original;
-        }, 1500);
+        btn.innerText = "คัดลอกแล้ว";
+        setTimeout(() => btn.innerText = original, 1500);
+      });
+    }
+
+    function resetAll() {
+      input.value = "";
+      errorMsg.innerText = "";
+      clearResults();
+    }
+
+    function clearResults() {
+      ["res2NoDup", "res2Dup", "res3NoDup", "res3Dup"].forEach(id => {
+        document.getElementById(id).innerText = "";
       });
     }
   </script>
