@@ -67,7 +67,7 @@
 <body>
 
   <h2>วินเลข</h2>
-  <input type="text" id="inputNumbers" maxlength="10" placeholder="ใส่เลขไม่ซ้ำ เช่น 1234" />
+  <input type="text" id="inputNumbers" placeholder="ใส่เลขไม่ซ้ำ เช่น 1234 หรือ 1 2 3 4" />
   <button class="btn-reset" onclick="resetAll()">รีเซ็ต</button>
   <div id="errorMsg" class="error"></div>
 
@@ -102,9 +102,18 @@
     input.addEventListener("input", handleInput);
 
     function handleInput() {
-      const digits = input.value.replace(/\D/g, "").split("");
+      // ลบเว้นวรรคทั้งหมดและเอาแต่ตัวเลข
+      const cleanInput = input.value.replace(/\s+/g, "").replace(/\D/g, "");
+      const digits = cleanInput.split("");
+      
+      // จำกัดไม่เกิน 10 ตัวเลข
+      if (digits.length > 10) {
+        input.value = cleanInput.substring(0, 10);
+        return;
+      }
+      
+      // ตรวจสอบเลขซ้ำ
       const uniqueDigits = [...new Set(digits)];
-
       if (digits.length !== uniqueDigits.length) {
         errorMsg.innerText = "มีเลขซ้ำอยู่ วินเลขไม่ได้";
         clearResults();
@@ -119,10 +128,11 @@
 
       errorMsg.innerText = "";
 
-      document.getElementById("res2NoDup").innerText = getPairs(uniqueDigits).sort().join(", ");
-      document.getElementById("res2Dup").innerText = getPairsWithDoubles(uniqueDigits).sort().join(", ");
-      document.getElementById("res3NoDup").innerText = getTriplets(uniqueDigits, false).sort().join(", ");
-      document.getElementById("res3Dup").innerText = getTriplets(uniqueDigits, true).sort().join(", ");
+      // ใช้ digits แทน uniqueDigits และไม่ sort ผลลัพธ์
+      document.getElementById("res2NoDup").innerText = getPairs(digits).join(", ");
+      document.getElementById("res2Dup").innerText = getPairsWithDoubles(digits).join(", ");
+      document.getElementById("res3NoDup").innerText = getTriplets(digits, false).join(", ");
+      document.getElementById("res3Dup").innerText = getTriplets(digits, true).join(", ");
     }
 
     function getPairs(digits) {
@@ -146,33 +156,33 @@
     }
 
     function getTriplets(digits, includeDoubles) {
-      const result = new Set();
+      const result = [];
 
       if (!includeDoubles) {
         for (let i = 0; i < digits.length - 2; i++) {
           for (let j = i + 1; j < digits.length - 1; j++) {
             for (let k = j + 1; k < digits.length; k++) {
-              result.add(digits[i] + digits[j] + digits[k]);
+              result.push(digits[i] + digits[j] + digits[k]);
             }
           }
         }
       } else {
-        const uniqueSet = new Set();
+        const seen = new Set();
         for (let i = 0; i < digits.length; i++) {
           for (let j = 0; j < digits.length; j++) {
             for (let k = 0; k < digits.length; k++) {
               const triplet = digits[i] + digits[j] + digits[k];
               const sortedKey = [...triplet].sort().join("");
-              if (!uniqueSet.has(sortedKey)) {
-                uniqueSet.add(sortedKey);
-                result.add(triplet);
+              if (!seen.has(sortedKey)) {
+                seen.add(sortedKey);
+                result.push(triplet);
               }
             }
           }
         }
       }
 
-      return Array.from(result);
+      return result;
     }
 
     function copyText(id, btn) {
