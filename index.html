@@ -4,95 +4,263 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>วินเลข</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background: #000;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
       color: white;
-      font-family: 'Sarabun', sans-serif;
-      text-align: center;
+      font-family: 'Prompt', sans-serif;
+      min-height: 100vh;
       padding: 20px;
     }
-    input[type="text"] {
-      font-size: 24px;
-      padding: 10px;
-      width: 250px;
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    h1 {
       text-align: center;
-      border-radius: 8px;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      background: linear-gradient(45deg, #fff, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
+
+    .input-section {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+    }
+
+    input[type="text"] {
+      font-size: 2rem;
+      font-weight: 600;
+      padding: 15px 20px;
+      width: 400px;
+      max-width: 90%;
+      text-align: center;
+      border: 3px solid #fff;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.9);
+      color: #2a5298;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      transform: scale(1.02);
+    }
+
+    .btn-reset {
+      background: linear-gradient(45deg, #ff4757, #ff3742);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-left: 15px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+    }
+
+    .btn-reset:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6);
+    }
+
     .error {
-      color: red;
-      margin-top: 10px;
-      font-weight: bold;
+      color: #ff4757;
+      margin-top: 15px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
     .group {
-      margin: 30px 0;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 25px;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
     }
+
+    .group:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .group h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
     .result {
       background: white;
-      color: black;
-      margin: 10px auto;
-      padding: 15px;
-      max-width: 90%;
-      font-size: 18px;
-      line-height: 1.6;
-      border-radius: 8px;
+      color: #2a5298;
+      margin: 15px 0;
+      padding: 20px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      line-height: 1.8;
+      border-radius: 12px;
       word-wrap: break-word;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
+
+    .result:empty {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+    }
+
+    .result:empty::before {
+      content: "รอใส่ข้อมูล...";
+    }
+
     .btn-copy {
-      background: dodgerblue;
+      background: linear-gradient(45deg, #5dade2, #3498db);
       color: white;
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 12px 25px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 14px;
-      margin-top: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 10px;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
     }
-    .btn-reset {
-      background: red;
-      color: white;
+
+    .btn-copy:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+    }
+
+    .btn-copy:active {
+      transform: translateY(0);
+    }
+
+    .no-double {
+      color: #2ecc71;
+      font-weight: 600;
+    }
+
+    .with-double {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+
+    .count-info {
+      background: rgba(255,255,255,0.1);
       padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-left: 10px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 500;
     }
-    h3 {
-      margin-bottom: 5px;
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      input[type="text"] {
+        width: 100%;
+        font-size: 1.5rem;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .group {
+        margin: 15px 0;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🎯 วินเลข</h1>
+    
+    <div class="input-section">
+      <input type="text" id="inputNumbers" placeholder="ใส่เลขไม่ซ้ำ เช่น 1234 หรือ 1 2 3 4" />
+      <button class="btn-reset" onclick="resetAll()">🔄 รีเซ็ต</button>
+      <div id="errorMsg" class="error"></div>
+    </div>
 
-  <h2>วินเลข</h2>
-  <input type="text" id="inputNumbers" placeholder="ใส่เลขไม่ซ้ำ เช่น 1234 หรือ 1 2 3 4" />
-  <button class="btn-reset" onclick="resetAll()">รีเซ็ต</button>
-  <div id="errorMsg" class="error"></div>
+    <div class="results-grid">
+      <div class="group">
+        <h3>🔢 เลข 2 ตัว <span class="no-double">ไม่รวมเบิ้ล</span></h3>
+        <div class="result" id="res2NoDup"></div>
+        <div class="count-info" id="count2NoDup"></div>
+        <button class="btn-copy" onclick="copyText('res2NoDup', this)">📋 คัดลอก</button>
+      </div>
 
-  <div class="group">
-    <h3>เลข 2 ตัว <span style="color:green;">ไม่รวมเบิ้ล</span></h3>
-    <div class="result" id="res2NoDup"></div>
-    <button class="btn-copy" onclick="copyText('res2NoDup', this)">คัดลอก</button>
-  </div>
+      <div class="group">
+        <h3>🔢 เลข 2 ตัว <span class="with-double">รวมเบิ้ล</span></h3>
+        <div class="result" id="res2Dup"></div>
+        <div class="count-info" id="count2Dup"></div>
+        <button class="btn-copy" onclick="copyText('res2Dup', this)">📋 คัดลอก</button>
+      </div>
 
-  <div class="group">
-    <h3>เลข 2 ตัว <span style="color:red;">รวมเบิ้ล</span></h3>
-    <div class="result" id="res2Dup"></div>
-    <button class="btn-copy" onclick="copyText('res2Dup', this)">คัดลอก</button>
-  </div>
+      <div class="group">
+        <h3>🎲 เลข 3 ตัว <span class="no-double">ไม่รวมเบิ้ล</span></h3>
+        <div class="result" id="res3NoDup"></div>
+        <div class="count-info" id="count3NoDup"></div>
+        <button class="btn-copy" onclick="copyText('res3NoDup', this)">📋 คัดลอก</button>
+      </div>
 
-  <div class="group">
-    <h3>เลข 3 ตัว <span style="color:green;">ไม่รวมเบิ้ล</span></h3>
-    <div class="result" id="res3NoDup"></div>
-    <button class="btn-copy" onclick="copyText('res3NoDup', this)">คัดลอก</button>
-  </div>
-
-  <div class="group">
-    <h3>เลข 3 ตัว <span style="color:red;">รวมเบิ้ล</span></h3>
-    <div class="result" id="res3Dup"></div>
-    <button class="btn-copy" onclick="copyText('res3Dup', this)">คัดลอก</button>
+      <div class="group">
+        <h3>🎲 เลข 3 ตัว <span class="with-double">รวมเบิ้ล</span></h3>
+        <div class="result" id="res3Dup"></div>
+        <div class="count-info" id="count3Dup"></div>
+        <button class="btn-copy" onclick="copyText('res3Dup', this)">📋 คัดลอก</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -100,39 +268,53 @@
     const errorMsg = document.getElementById("errorMsg");
 
     input.addEventListener("input", handleInput);
+    
+    // Enter key สำหรับรีเซ็ต
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        resetAll();
+      }
+    });
 
     function handleInput() {
-      // ลบเว้นวรรคทั้งหมดและเอาแต่ตัวเลข
       const cleanInput = input.value.replace(/\s+/g, "").replace(/\D/g, "");
       const digits = cleanInput.split("");
       
-      // จำกัดไม่เกิน 10 ตัวเลข
       if (digits.length > 10) {
         input.value = cleanInput.substring(0, 10);
         return;
       }
       
-      // ตรวจสอบเลขซ้ำ
       const uniqueDigits = [...new Set(digits)];
       if (digits.length !== uniqueDigits.length) {
-        errorMsg.innerText = "มีเลขซ้ำอยู่ วินเลขไม่ได้";
+        errorMsg.innerHTML = "❌ มีเลขซ้ำอยู่ วินเลขไม่ได้";
         clearResults();
         return;
       }
 
       if (digits.length === 0) {
-        errorMsg.innerText = "";
+        errorMsg.innerHTML = "";
         clearResults();
         return;
       }
 
-      errorMsg.innerText = "";
+      errorMsg.innerHTML = "";
 
-      // ใช้ digits แทน uniqueDigits และไม่ sort ผลลัพธ์
-      document.getElementById("res2NoDup").innerText = getPairs(digits).join(", ");
-      document.getElementById("res2Dup").innerText = getPairsWithDoubles(digits).join(", ");
-      document.getElementById("res3NoDup").innerText = getTriplets(digits, false).join(", ");
-      document.getElementById("res3Dup").innerText = getTriplets(digits, true).join(", ");
+      const pairs2NoDup = getPairs(digits);
+      const pairs2Dup = getPairsWithDoubles(digits);
+      const triplets3NoDup = getTriplets(digits, false);
+      const triplets3Dup = getTriplets(digits, true);
+
+      document.getElementById("res2NoDup").innerText = pairs2NoDup.join(", ");
+      document.getElementById("res2Dup").innerText = pairs2Dup.join(", ");
+      document.getElementById("res3NoDup").innerText = triplets3NoDup.join(", ");
+      document.getElementById("res3Dup").innerText = triplets3Dup.join(", ");
+
+      // แสดงจำนวน
+      document.getElementById("count2NoDup").innerHTML = `📊 รวม ${pairs2NoDup.length} ชุด`;
+      document.getElementById("count2Dup").innerHTML = `📊 รวม ${pairs2Dup.length} ชุด`;
+      document.getElementById("count3NoDup").innerHTML = `📊 รวม ${triplets3NoDup.length} ชุด`;
+      document.getElementById("count3Dup").innerHTML = `📊 รวม ${triplets3Dup.length} ชุด`;
     }
 
     function getPairs(digits) {
@@ -187,16 +369,25 @@
 
     function copyText(id, btn) {
       const text = document.getElementById(id).innerText;
+      if (!text || text === "รอใส่ข้อมูล...") {
+        btn.innerHTML = "❌ ไม่มีข้อมูล";
+        setTimeout(() => btn.innerHTML = "📋 คัดลอก", 1500);
+        return;
+      }
+      
       navigator.clipboard.writeText(text).then(() => {
-        const original = btn.innerText;
-        btn.innerText = "คัดลอกแล้ว";
-        setTimeout(() => btn.innerText = original, 1500);
+        btn.innerHTML = "✅ คัดลอกแล้ว";
+        setTimeout(() => btn.innerHTML = "📋 คัดลอก", 2000);
+      }).catch(() => {
+        btn.innerHTML = "❌ คัดลอกไม่ได้";
+        setTimeout(() => btn.innerHTML = "📋 คัดลอก", 1500);
       });
     }
 
     function resetAll() {
       input.value = "";
-      errorMsg.innerText = "";
+      input.focus();
+      errorMsg.innerHTML = "";
       clearResults();
     }
 
@@ -204,7 +395,13 @@
       ["res2NoDup", "res2Dup", "res3NoDup", "res3Dup"].forEach(id => {
         document.getElementById(id).innerText = "";
       });
+      ["count2NoDup", "count2Dup", "count3NoDup", "count3Dup"].forEach(id => {
+        document.getElementById(id).innerHTML = "";
+      });
     }
+
+    // Focus input เมื่อโหลดเสร็จ
+    window.onload = () => input.focus();
   </script>
 </body>
 </html>
